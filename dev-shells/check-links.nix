@@ -1,0 +1,50 @@
+{
+  perSystem =
+    {
+      pkgs,
+      self',
+      lib,
+      ...
+    }:
+    {
+      apps.checkLinks = {
+        type = "app";
+        meta.description = "Check local and remote links via lychee";
+        program = self'.packages.checkLinks;
+      };
+
+      packages.checkLinks =
+        let
+          configFile = (pkgs.formats.toml { }).generate "lychee.toml" {
+            root_dir = ".";
+            include_fragments = "full";
+            include_verbatim = true;
+            require_https = true;
+            include_mail = true;
+            extensions = [
+              "el"
+              "nix"
+              "yaml"
+            ]
+            ++ lib.splitString "," "md,mkd,mdx,mdown,mdwn,mkdn,mkdown,markdown,html,htm,css,txt,xml"; # default value of lychee 0.24.2
+          };
+        in
+        pkgs.writeShellApplication {
+          name = "check-links";
+          runtimeInputs = [ pkgs.lychee ];
+          text = ''
+            if ! [ -r "''${SSL_CERT_FILE-}" ]; then
+              # lychee insists on reading CA certs, even when it makes no network connection
+              # probably, here we are in the nix build sandbox (run by `nix flake check`)
+              # the sandbox has an empty cert which lychee dislikes
+              # this makes lychee happy
+              SSL_CERT_FILE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt
+            fi
+
+            lychee --config ${configFile} "$@"
+          '';
+        };
+
+      checks = { inherit (self'.packages) checkLinks; };
+    };
+}

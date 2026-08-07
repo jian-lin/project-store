@@ -1,0 +1,37 @@
+name: CI
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+permissions: {}
+jobs:
+  nix-flake-check:
+    name: nix flake check
+    runs-on: ubuntu-latest
+    steps:
+      - &checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - &install-nix
+        uses: cachix/install-nix-action@630ae543ea3a38a9a4166f03376c02c50f408342 # v31.11.0
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes pipe-operators
+      - run: nix flake check
+  zizmor:
+    name: zizmor (online mode)
+    runs-on: ubuntu-latest
+    steps:
+      - *checkout
+      - *install-nix
+      - run: nix run .#zizmor -- . --verbose
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  check-links:
+    uses: ./.github/workflows/check-links.yaml

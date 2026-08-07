@@ -1,0 +1,29 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "cron"
+      cronjob: "21 8 * * *"
+      timezone: "Asia/Shanghai"
+    commit-message:
+      prefix: "chore"
+    groups:
+      actions:
+        patterns:
+          - "*"
+    cooldown:
+      default-days: 7
+  - package-ecosystem: "nix" # zizmor: ignore[dependabot-cooldown] because dependabot does not support security update for nix
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "saturday"
+      time: "08:21"
+      timezone: "Asia/Shanghai"
+    commit-message:
+      prefix: "chore"
+    groups:
+      flake-inputs:
+        patterns:
+          - "*"
