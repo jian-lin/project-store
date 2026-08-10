@@ -1,12 +1,13 @@
 ;;; project-store.el --- Project backend for Nix store  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2026 Lin Jian
-
 ;; Author: Lin Jian <me@linj.tech>
 ;; Homepage: https://github.com/jian-lin/project-store
 ;; Keywords: nix store project tools
 ;; Version: 1.0.0
 ;; Package-Requires: ((emacs "29.1"))
+
+;; SPDX-FileCopyrightText: 2026 Lin Jian <me@linj.tech>
+;; SPDX-License-Identifier: GPL-3.0-or-later
 
 ;;; Commentary:
 

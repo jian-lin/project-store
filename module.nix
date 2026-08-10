@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Lin Jian <me@linj.tech>
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 { inputs, self, ... }:
 
 let

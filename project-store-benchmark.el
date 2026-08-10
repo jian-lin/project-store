@@ -1,5 +1,8 @@
 ;;; project-store-benchmark.el --- Benchmark project-store  -*- lexical-binding: t; -*-
 
+;; SPDX-FileCopyrightText: 2026 Lin Jian <me@linj.tech>
+;; SPDX-License-Identifier: GPL-3.0-or-later
+
 ;;; Commentary:
 
 ;; Entry point:
