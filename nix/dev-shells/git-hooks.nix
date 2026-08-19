@@ -19,7 +19,7 @@
           checkLocalLinks = {
             enable = true;
             name = "Check local links";
-            entry = self'.apps.checkLinks.program;
+            entry = self'.apps.check-links.program;
             args = [
               "--no-progress"
               "--offline"
@@ -38,10 +38,10 @@
             ];
             language = "unsupported";
           };
-          packageLint = {
+          package-lint = {
             enable = true;
             name = "package-lint";
-            entry = self'.apps.packageLint.program;
+            entry = self'.apps.package-lint.program;
             files = "\\.el$";
             types = [ "text" ];
             excludes = [

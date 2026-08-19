@@ -9,13 +9,13 @@
       ...
     }:
     {
-      apps.packageLint = {
+      apps.package-lint = {
         type = "app";
         meta.description = "Run package-lint-batch-and-exit against Emacs lisp files";
-        program = self'.checks.packageLint;
+        program = self'.checks.package-lint;
       };
 
-      checks.packageLint = pkgs.writeShellApplication {
+      checks.package-lint = pkgs.writeShellApplication {
         name = "package-lint";
         runtimeInputs = [
           (pkgs.emacs.pkgs.withPackages (epkgs: [ epkgs.package-lint ]))

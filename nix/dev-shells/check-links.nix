@@ -10,13 +10,13 @@
       ...
     }:
     {
-      apps.checkLinks = {
+      apps.check-links = {
         type = "app";
         meta.description = "Check local and remote links via lychee";
-        program = self'.checks.checkLinks;
+        program = self'.checks.check-links;
       };
 
-      checks.checkLinks =
+      checks.check-links =
         let
           configFile = (pkgs.formats.toml { }).generate "lychee.toml" {
             root_dir = ".";
