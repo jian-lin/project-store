@@ -48,7 +48,7 @@ In addition, we manually do GC once before evaluating BODY."
 ;; variable lookup time in benchmark results.
 
 (defun project-store-benchmark--project-store-try ()
-  (let ((project-store-dir "/nix/store/")
+  (let ((project-store-dirs '("/nix/store/"))
         (project-store--cached-projects (make-hash-table :test 'equal)))
     (project-store-benchmark-with-interactive-gc
       (benchmark-run-compiled 10000000
@@ -56,7 +56,7 @@ In addition, we manually do GC once before evaluating BODY."
          "/nix/store/jnhsnfz13w8ailk2lfs2pvamwa35mxzs-emacs-packages-deps/share/emacs/site-lisp/elpa/org-9.8.1/")))))
 
 (defun project-store-benchmark--project-store--try-without-cache ()
-  (let ((project-store-dir "/nix/store/"))
+  (let ((project-store-dirs '("/nix/store/")))
     (project-store-benchmark-with-interactive-gc
       (benchmark-run-compiled 10000
         (project-store--try-without-cache
@@ -66,16 +66,16 @@ In addition, we manually do GC once before evaluating BODY."
   (project-store-benchmark-with-interactive-gc
     (benchmark-run-compiled 1000000
       (project-root
-       '(store . "/nix/store/jnhsnfz13w8ailk2lfs2pvamwa35mxzs-emacs-packages-deps/")))))
+       '(store "/nix/store/jnhsnfz13w8ailk2lfs2pvamwa35mxzs-emacs-packages-deps/" "/nix/store/")))))
 
 (defun project-store-benchmark--project-name ()
-  (let ((project-store-dir "/nix/store/")
+  (let ((project-store-dirs '("/nix/store/"))
         (project-store-name-prefix "/S/")
         (project-store--cached-project-names (make-hash-table :test 'equal)))
     (project-store-benchmark-with-interactive-gc
       (benchmark-run-compiled 1000000
         (project-name
-         '(store . "/nix/store/jnhsnfz13w8ailk2lfs2pvamwa35mxzs-emacs-packages-deps/"))))))
+         '(store "/nix/store/jnhsnfz13w8ailk2lfs2pvamwa35mxzs-emacs-packages-deps/" "/nix/store/"))))))
 
 ;;;###autoload
 (defun project-store-benchmark-run (&optional output-file)

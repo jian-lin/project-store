@@ -33,18 +33,18 @@
   "Cache for `project-name'.")
 
 (defun project-store--set-dir (symbol value)
-  "Set `project-store-dir' after invalidating cache.
+  "Set `project-store-dirs' after invalidating cache.
 SYMBOL and VALUE are passed to `set-default-toplevel-value'.
 VALUE is preprocessed by `file-name-as-directory'."
   (clrhash project-store--cached-projects)
   (clrhash project-store--cached-project-names)
-  (set-default-toplevel-value symbol (file-name-as-directory value)))
+  (set-default-toplevel-value symbol (mapcar #'file-name-as-directory value)))
 
-(defcustom project-store-dir "/nix/store/"
-  "Store directory.
+(defcustom project-store-dirs '("/nix/store/")
+  "A list of store directories.
 
 See URL `https://nix.dev/manual/nix/2.35/store/store-path.html#store-directory-path'."
-  :type 'directory
+  :type '(repeat directory)
   ;; TODO set :initialize when Emacs bug#81396 is fixed
   ;; :initialize #'custom-initialize-changed
   :set #'project-store--set-dir
@@ -71,19 +71,21 @@ See `project-root' for store path definition."
 (defun project-store--try-without-cache (dir)
   "Like `project-store-try', but do not use cache.
 See `project-store-try' for DIR and return value."
-  (when (and (string-prefix-p project-store-dir dir)
-             (not (string= dir project-store-dir)))
-    (cl-loop for project-root = dir then project-root-parent
-             for project-root-parent = (file-name-parent-directory project-root)
-             until (string= project-root-parent project-store-dir)
-             finally return (cons 'store project-root))))
+  (cl-loop for project-store-dir in project-store-dirs
+           thereis
+           (when (and (string-prefix-p project-store-dir dir)
+                      (not (string= dir project-store-dir)))
+             (cl-loop for project-root = dir then project-root-parent
+                      for project-root-parent = (file-name-parent-directory project-root)
+                      until (string= project-root-parent project-store-dir)
+                      finally return (list 'store project-root project-store-dir)))))
 
 (cl-defmethod project-root ((project (head store)))
   "Return PROJECT store path.
 
 See URL `https://nix.dev/manual/nix/2.35/store/store-path.html#store-path'
 for store path definition."
-  (cdr project))
+  (nth 1 project))
 
 (defun project-store--set-name-prefix (symbol value)
   "Set `project-store-name-prefix' after invalidating cache.
@@ -107,7 +109,7 @@ See `project-root' for store path definition."
         (gethash project-root project-store--cached-project-names)
       (concat project-store-name-prefix
               (substring (directory-file-name project-root)
-                         (+ (length project-store-dir)
+                         (+ (length (nth 2 project))
                             ;; length of digest and a hyphen
                             33))))))
 
